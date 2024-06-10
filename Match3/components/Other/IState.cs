@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Match3.components
 {
-    internal enum FigureType
+    internal interface IState
     {
-        Red,
-        Green,
-        Blue,
-        Yellow,
-        Grey
+        internal int Score{get;}
     }
 }

@@ -8,6 +8,13 @@ namespace Match3.components
 {
     abstract internal class Entity : Control
     {
-        public FigureType figureType {  get; set; }
+        internal FigureType figureType {  get; set; }
+        internal Vector2 position { get; }
+
+        internal Entity(Vector2 position, FigureType figureType)
+        {
+            this.position = position;
+            this.figureType = figureType;
+        }
     }
 }

@@ -8,5 +8,10 @@ namespace Match3.components
 {
     internal class GameGrid
     {
+        private Entity[,] grid;
+        internal GameGrid(Size size)
+        {
+            grid = new Entity[size.Height, size.Width];
+        }
     }
 }
