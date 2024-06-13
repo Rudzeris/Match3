@@ -3,11 +3,11 @@
     internal class GameGrid
     {
         private Entity[,] grid;
-        internal Entity? this[Vector2 position]
+        internal Entity this[Vector2 position]
         {
             get => grid[position.Y, position.X];
         }
-        internal Entity? this[int y, int x]
+        internal Entity this[int y, int x]
         {
             get => grid[y, x];
         }
@@ -30,11 +30,32 @@
                 {
                     if (GridActive(i, j))
                         grid[i, j].RemoveFromWin();
+                    grid[i, j] = null;
                 }
             }
         }
+        internal void Swap(Entity left, Entity right)
+        {
+            Entity temp = grid[left.Position.Y, left.Position.X];
+
+            grid[left.Position.Y, left.Position.X]
+                = grid[right.Position.Y, right.Position.X];
+
+            grid[right.Position.Y, right.Position.X]
+                = temp;
+
+            Vector2 tempV = left.Position;
+            left.Position = right.Position;
+            right.Position = tempV;
+
+        }
+
         private bool GridActive(int y, int x)
         {
+            if(y<0 || y>=Height) 
+                return false;
+            if(x<0 || x>=Width) 
+                return false;
             if (grid[y, x] == null)
                 return false;
             if (!grid[y, x].IsActivity)
@@ -67,6 +88,10 @@
                 {
                     if (!GridActive(i + 1, j) && GridActive(i, j))
                     {
+                        Vector2 temp = grid[i, j].Position;
+                        temp.Y++;
+                        grid[i, j].Position = temp;
+
                         grid[i + 1, j] = grid[i, j];
 #pragma warning disable CS8625 // Литерал, равный NULL, не может быть преобразован в ссылочный тип, не допускающий значение NULL.
                         grid[i, j] = null;
@@ -74,6 +99,61 @@
                     }
                 }
             }
+        }
+        internal int Check(Entity entity)
+        {
+            if (!GridActive(entity.Position.Y, entity.Position.X))
+                return 0;
+            int k = 0;
+            int x, y;
+            for(int i = 0; i<3; i++)
+            {
+                k = 0;
+                for(int j = 0; j < 3; j++)
+                {
+                    y = entity.Position.Y;
+                    x = entity.Position.X-i+j;
+                    if (GridActive(y,x))
+                    {
+                        Entity temp = grid[y, x];
+                        if (entity.FigureType == temp.FigureType)
+                            k++;
+                    }
+                }
+                if (k == 3)
+                {
+                    for (int j = 0; j < 3; j++)
+                        grid[entity.Position.Y, 
+                            entity.Position.X - i + j].RemoveFromWin();
+                    return k;
+                }
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                k = 0;
+                for (int j = 0; j < 3; j++)
+                {
+                    y = entity.Position.Y - i + j;
+                    x = entity.Position.X;
+                    if (GridActive(y, x))
+                    {
+                        if (GridActive(y, x))
+                        {
+                            Entity temp = grid[y, x];
+                            if (entity.FigureType == temp.FigureType)
+                                k++;
+                        }
+                    }
+                }
+                if (k == 3)
+                {
+                    for (int j = 0; j < 3; j++)
+                        grid[entity.Position.Y - i + j,
+                            entity.Position.X].RemoveFromWin();
+                    return k;
+                }
+            }
+            return 0;
         }
         internal void Update()
         {
