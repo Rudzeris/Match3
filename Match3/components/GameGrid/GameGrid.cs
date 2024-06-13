@@ -3,11 +3,11 @@
     internal class GameGrid
     {
         private Entity[,] grid;
-        internal Entity this[Vector2 position]
+        internal Entity? this[Vector2 position]
         {
             get => grid[position.Y, position.X];
         }
-        internal Entity this[int y, int x]
+        internal Entity? this[int y, int x]
         {
             get => grid[y, x];
         }
@@ -16,38 +16,96 @@
         internal int Width { get => Size.Width; }
 
         private FigureFabric figureFabric;
-        internal GameGrid(Size size,FigureFabric figureFabric)
+        internal GameGrid(Size size, FigureFabric figureFabric)
         {
             this.grid = new Entity[size.Height, size.Width];
             this.figureFabric = figureFabric;
             this.Size = size;
         }
-        internal void Fill()
+        internal void Clear()
         {
             for (int i = 0; i < Height; i++)
             {
                 for (int j = 0; j < Width; j++)
                 {
-                    if (grid[i,j] == null ? true : !grid[i,j].IsActivity)
-                        grid[i, j] = figureFabric.Create(new Vector2(j, i));
+                    if (GridActive(i, j))
+                        grid[i, j].RemoveFromWin();
                 }
             }
         }
-        internal void FillUp()
+        private bool GridActive(int y, int x)
         {
-            int j = 0;
-            for(int i = 0;i < Width; i++)
-                if (grid[i, j] == null ? true : !grid[i, j].IsActivity)
+            if (grid[y, x] == null)
+                return false;
+            if (!grid[y, x].IsActivity)
+                return false;
+            return true;
+        }
+        private void FillUp()
+        {
+            int i = 0;
+            for (int j = 0; j < Width; j++)
+                if (!GridActive(i, j))
                     grid[i, j] = figureFabric.Create(new Vector2(j, i));
         }
-        internal void AddInForm()
+        internal bool IsFillUp()
+        {
+            int j = 0;
+            for (int i = 0; i < Width; i++)
+                if (!GridActive(i, j))
+                    return false;
+            return true;
+        }
+        private void AddInForm()
         {
             for (int i = 0; i < Height; i++)
             {
                 for (int j = 0; j < Width; j++)
                 {
-                    if(grid[i,j].IsActivity)
+                    if (GridActive(i, j))
                         grid[i, j].AddInWin();
+                }
+            }
+        }
+        private void EntityFall()
+        {
+            for (int i = Height - 2; i >= 0; i--)
+            {
+                for (int j = 0; j < Width; j++)
+                {
+                    if (!GridActive(i+1, j) && GridActive(i,j))
+                    {
+                        grid[i + 1, j] = grid[i, j];
+#pragma warning disable CS8625 // Литерал, равный NULL, не может быть преобразован в ссылочный тип, не допускающий значение NULL.
+                        grid[i, j] = null;
+#pragma warning restore CS8625 // Литерал, равный NULL, не может быть преобразован в ссылочный тип, не допускающий значение NULL.
+                    }
+                }
+            }
+        }
+        internal void Update()
+        {
+            FillUp();
+            EntityFall();
+            AddInForm();
+        }
+
+        internal void UpdateSizeAndLocationFigures(
+            int sizeFigure,int border)
+        {
+          
+            for (int i = 0; i < Height; i++)
+            {
+                for (int j = 0; j < Width; j++)
+                {
+                    if (GridActive(i, j))
+                    {
+                        grid[i, j].Size = new Size(sizeFigure, sizeFigure);
+                        grid[i, j].Location = new Point(
+                            border + j * (sizeFigure + border),
+                            border + i * (sizeFigure + border)
+                            );
+                    }
                 }
             }
         }

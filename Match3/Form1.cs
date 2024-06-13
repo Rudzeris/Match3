@@ -10,14 +10,29 @@ namespace Match3
     {
         private GameGrid gameGrid;
         private FigureFabric figureFabric;
-        private const int border = 1;
+        private const int border = 10;
+
+        private Entity? first;
+        private Entity? second;
 
         private Timer timer;
 
+        private int SizeFigure
+        {
+            get => Math.Min(
+                gridPanel.Height - border * (2 + gameGrid.Height),
+                gridPanel.Width - border * (2 + gameGrid.Width))
+                / Math.Max(gameGrid.Height, gameGrid.Width);
+        }
         public Form1()
         {
             InitializeComponent();
 
+           
+            Start();
+        }
+        private void Start()
+        {
             timer = new Timer();
             timer.Tick += Update;
             timer.Interval = 100;
@@ -25,40 +40,74 @@ namespace Match3
 
             figureFabric = new FigureFabric(AddEntity, RemoveEntity);
             gameGrid = new GameGrid(new Size(8, 8), figureFabric);
-            Start();
+
+            gameGrid.Clear();
         }
-        private void Start()
+
+        private void Stop()
         {
-            gameGrid.Fill();
-            gameGrid.AddInForm();
+            timer.Stop();
         }
 
         public void Update(object? sender, EventArgs? args)
         {
+            gameGrid.Update();
             UpdateSizeAndLocationFigures();
+            SelectEffect();
         }
 
         internal void AddEntity(Control item) => gridPanel.Controls.Add(item);
         internal void RemoveEntity(Control item) => gridPanel.Controls.Remove(item);
 
-        private void UpdateSizeAndLocationFigures()
+        private void SelectEffect()
         {
-            int sizeFigure = Math.Min(
-                gridPanel.Height - border * (2 + gameGrid.Height),
-                gridPanel.Width - border * (2 + gameGrid.Width))
-                / Math.Max(gameGrid.Height, gameGrid.Width);
+            int border2 = SizeFigure / 8;
 
-            for (int i = 0; i < gameGrid.Height; i++)
+            if (first != null)
             {
-                for (int j = 0; j < gameGrid.Width; j++)
+                first.Size = new Size(SizeFigure-border2, SizeFigure-border2);
+                first.Location = new Point(
+                    border+border2 + first.Position.X * (SizeFigure+border2 + border),
+                    border+border2 + first.Position.Y * (SizeFigure+border2 + border)
+                    );
+            }
+            if (second != null)
+            {
+                second.Size = new Size(SizeFigure - border2, SizeFigure - border2);
+                second.Location = new Point(
+                    border + border2 + second.Position.X * (SizeFigure + border2 + border),
+                    border + border2 + second.Position.Y * (SizeFigure + border2 + border)
+                    );
+            }
+        }
+
+        private bool Playing
+        {
+            get => gameGrid.IsFillUp();
+        }
+
+        internal void SelectItem(object sender, EventArgs? args)
+        {
+            if (sender is Entity entity)
+            {
+                if (first == null)
                 {
-                    gameGrid[i, j].Size = new Size(sizeFigure, sizeFigure);
-                    gameGrid[i, j].Location = new Point(
-                        border + j * (sizeFigure + border),
-                        border + i * (sizeFigure + border)
-                        );
+                    first = entity;
+                }
+                else
+                {
+                    if (second == null)
+                    {
+                        second = entity;
+                    }
                 }
             }
+        }
+
+        private void UpdateSizeAndLocationFigures()
+        {
+
+            gameGrid.UpdateSizeAndLocationFigures(SizeFigure, border);
         }
 
     }
