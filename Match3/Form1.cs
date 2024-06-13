@@ -28,7 +28,7 @@ namespace Match3
         {
             InitializeComponent();
 
-           
+
             Start();
         }
         private void Start()
@@ -53,52 +53,56 @@ namespace Match3
         {
             gameGrid.Update();
             UpdateSizeAndLocationFigures();
-            SelectEffect();
+
         }
 
-        internal void AddEntity(Control item) => gridPanel.Controls.Add(item);
+        internal void AddEntity(Control item)
+        {
+            if (item != null)
+            {
+                gridPanel.Controls.Add(item);
+                item.Click += SelectItem;
+            }
+        }
         internal void RemoveEntity(Control item) => gridPanel.Controls.Remove(item);
 
-        private void SelectEffect()
-        {
-            int border2 = SizeFigure / 8;
-
-            if (first != null)
-            {
-                first.Size = new Size(SizeFigure-border2, SizeFigure-border2);
-                first.Location = new Point(
-                    border+border2 + first.Position.X * (SizeFigure+border2 + border),
-                    border+border2 + first.Position.Y * (SizeFigure+border2 + border)
-                    );
-            }
-            if (second != null)
-            {
-                second.Size = new Size(SizeFigure - border2, SizeFigure - border2);
-                second.Location = new Point(
-                    border + border2 + second.Position.X * (SizeFigure + border2 + border),
-                    border + border2 + second.Position.Y * (SizeFigure + border2 + border)
-                    );
-            }
-        }
 
         private bool Playing
         {
             get => gameGrid.IsFillUp();
         }
 
-        internal void SelectItem(object sender, EventArgs? args)
+        internal void SelectItem(object? sender, EventArgs? args)
         {
             if (sender is Entity entity)
             {
-                if (first == null)
+                FlatStyle selectStyle = FlatStyle.Flat;
+                FlatStyle unSelectStyle = FlatStyle.Standard;
+                if (second == entity)
                 {
-                    first = entity;
+                    second.FlatStyle = unSelectStyle;
+                    second = null;
+                }
+                else if (first == entity)
+                {
+                    first.FlatStyle = unSelectStyle;
+                    first = second;
+                    second = null;
                 }
                 else
                 {
-                    if (second == null)
+                    if (first == null)
                     {
-                        second = entity;
+                        first = entity;
+                        first.FlatStyle = selectStyle;
+                    }
+                    else
+                    {
+                        if (second == null)
+                        {
+                            second = entity;
+                            second.FlatStyle = selectStyle;
+                        }
                     }
                 }
             }

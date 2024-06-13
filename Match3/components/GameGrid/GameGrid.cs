@@ -46,7 +46,10 @@
             int i = 0;
             for (int j = 0; j < Width; j++)
                 if (!GridActive(i, j))
+                {
                     grid[i, j] = figureFabric.Create(new Vector2(j, i));
+                    grid[i, j].AddInWin();
+                }
         }
         internal bool IsFillUp()
         {
@@ -56,24 +59,13 @@
                     return false;
             return true;
         }
-        private void AddInForm()
-        {
-            for (int i = 0; i < Height; i++)
-            {
-                for (int j = 0; j < Width; j++)
-                {
-                    if (GridActive(i, j))
-                        grid[i, j].AddInWin();
-                }
-            }
-        }
         private void EntityFall()
         {
             for (int i = Height - 2; i >= 0; i--)
             {
                 for (int j = 0; j < Width; j++)
                 {
-                    if (!GridActive(i+1, j) && GridActive(i,j))
+                    if (!GridActive(i + 1, j) && GridActive(i, j))
                     {
                         grid[i + 1, j] = grid[i, j];
 #pragma warning disable CS8625 // Литерал, равный NULL, не может быть преобразован в ссылочный тип, не допускающий значение NULL.
@@ -85,15 +77,18 @@
         }
         internal void Update()
         {
+            //System.Threading.Thread thread1 = new(FillUp);
             FillUp();
+            //thread1.Start();
+            //System.Threading.Thread thread2 = new(EntityFall);
             EntityFall();
-            AddInForm();
+            //thread2.Start();
         }
 
         internal void UpdateSizeAndLocationFigures(
-            int sizeFigure,int border)
+            int sizeFigure, int border)
         {
-          
+
             for (int i = 0; i < Height; i++)
             {
                 for (int j = 0; j < Width; j++)

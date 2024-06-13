@@ -32,6 +32,8 @@ namespace Match3.components
             entity.Add = add;
             entity.Remove = remove;
             entity.BackColor = GetColor(entity.FigureType);
+            entity.FlatAppearance.BorderColor = Color.Black;
+            entity.FlatAppearance.BorderSize = 3;
             return entity;
 
         }

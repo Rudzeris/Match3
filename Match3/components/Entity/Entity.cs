@@ -1,6 +1,6 @@
 ﻿namespace Match3.components
 {
-    abstract internal class Entity : Control
+    abstract internal class Entity : Button
     {
         internal PrintInWindow? Add { get; set; }
         internal RemoveInWindow? Remove { get; set; }
