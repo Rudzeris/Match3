@@ -3,8 +3,8 @@
     internal class FigureFabric
     {
         PrintInWindow add;
-        DeleteInWindow remove;
-        internal FigureFabric(PrintInWindow print, DeleteInWindow remove)
+        RemoveInWindow remove;
+        internal FigureFabric(PrintInWindow print, RemoveInWindow remove)
         {
             this.add = print;
             this.remove = remove;
@@ -12,10 +12,10 @@
 
         internal Entity Create(Vector2 position)
         {
-
-            Entity entity = new Figure(position,FigureType.Red);
-            entity.add = add;
-            entity.remove = remove;
+            Entity entity = new Figure(position,FigureType.Gray);
+            entity.Add = add;
+            entity.Remove = remove;
+            entity.BackColor = Color.Gray;
             return entity;
 
         }

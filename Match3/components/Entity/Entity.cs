@@ -2,8 +2,8 @@
 {
     abstract internal class Entity : Control
     {
-        internal PrintInWindow add { get; set; }
-        internal DeleteInWindow remove { get; set; }
+        internal PrintInWindow Add { get; set; }
+        internal RemoveInWindow Remove { get; set; }
         internal FigureType FigureType { get; set; }
         internal Vector2 Position { get; }
 
@@ -12,5 +12,8 @@
             this.Position = position;
             this.FigureType = figureType;
         }
+        internal void AddInWin() => Add(this);
+        internal void RemoveFromWin() => Remove(this);
+        
     }
 }

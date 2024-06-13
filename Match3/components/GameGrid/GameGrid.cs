@@ -9,9 +9,12 @@
         }
         public int Height { get; private set; }
         public int Width { get; private set; }
-        internal GameGrid(Size size)
+
+        private FigureFabric figureFabric;
+        internal GameGrid(Size size,FigureFabric figureFabric)
         {
-            grid = new Entity[size.Height, size.Width];
+            this.grid = new Entity[size.Height, size.Width];
+            this.figureFabric = figureFabric;
         }
         internal void Fill()
         {
@@ -19,11 +22,17 @@
             {
                 for (int j = 0; j < Width; j++)
                 {
-                    grid[i, j] =
-                        new Figure(
-                            new Vector2(j, i),
-                            FigureType.Red
-                            );
+                    grid[i, j] = figureFabric.Create(new Vector2(j, i));
+                }
+            }
+        }
+        internal void Print()
+        {
+            for (int i = 0; i < Height; i++)
+            {
+                for (int j = 0; j < Width; j++)
+                {
+                    grid[i, j].AddInWin();
                 }
             }
         }

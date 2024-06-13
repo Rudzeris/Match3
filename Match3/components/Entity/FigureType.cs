@@ -6,6 +6,6 @@
         Green,
         Blue,
         Yellow,
-        Grey
+        Gray
     }
 }
