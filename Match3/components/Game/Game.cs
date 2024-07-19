@@ -6,35 +6,73 @@ namespace Match3.components.Game
 {
     public class Game : GameState
     {
-        private Grid grid;
+        private Panel mainPanel;
+        private Grid gameGrid;
         private Button button;
+        private ProgressBar progressBar;
+        private Grid status;
         public Game(Panel panel, RoutedEventHandler routedEventHandler) : base(panel)
         {
-            grid = new Grid();
-            grid.Background = Brushes.Gray;
-            for (int i = 0; i < 3; i++)
-            {
-                grid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            }
-            grid.RowDefinitions[1].Height = new GridLength(30);
-            grid.ColumnDefinitions[1].Width = new GridLength(80);
+            // MainPanel
+            Grid mainGrid = new Grid();
+            mainGrid.Background = Brushes.DarkCyan;
 
+            mainGrid.RowDefinitions.Add(
+                new RowDefinition()
+                );
+            mainGrid.RowDefinitions.Add(
+                new RowDefinition()
+                { Height = new GridLength(20, GridUnitType.Pixel) }
+                );
+
+            // StatusPanel
+            status = new Grid();
+            status.ColumnDefinitions.Add(
+                new ColumnDefinition()
+                { Width = new GridLength(80) }
+                );
+            status.ColumnDefinitions.Add(
+                new ColumnDefinition()
+                );
+            status.ColumnDefinitions.Add(
+                new ColumnDefinition()
+                { Width = new GridLength(40) }
+                );
+            mainGrid.Children.Add( status );
+            Grid.SetRow(status, 1);
+
+            // ProgressBar
+            progressBar = new ProgressBar();
+            Grid.SetRow(progressBar, 1);
+            status.Children.Add(progressBar);
+            progressBar.Maximum = 60;
+            Grid.SetColumn(progressBar, 1);
+
+            // Button
             button = new Button { Content = "Click" };
-            grid.Children.Add(button);
-            Grid.SetColumn(button, 1);
-            Grid.SetRow(button, 1);
+            button.Click += (object? sender,RoutedEventArgs e)=>
+            {
+                if(progressBar.Value != 60)
+                progressBar.Value++;
+                else
+                {
+                    progressBar.Value = 0;
+                    routedEventHandler(sender, e);
+                }
+            };
+            status.Children.Add(button);
+            Grid.SetColumn(button, 2);
 
-            button.Click += routedEventHandler;
+            mainPanel = mainGrid;
         }
         public override void Start()
         {
-            panel.Children.Add(grid);
+            panel.Children.Add(mainPanel);
         }
 
         public override void Stop()
         {
-            panel.Children.Remove(grid);
+            panel.Children.Remove(mainPanel);
         }
 
         public override void Update()
