@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
 
 namespace Match3;
-public class Score
+public struct Score
 {
     private readonly ContentControl content;
     public Score(ContentControl content)

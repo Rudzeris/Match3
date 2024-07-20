@@ -20,11 +20,15 @@ public partial class MainWindow : Window
         game.nextState = end;
         end.nextState = gameState;
 
+        Title = gameState.ToString();
+
         gameState.Start();
     }
     private void NextStateClick(object? sender, RoutedEventArgs e)
     {
         gameState = gameState.NextState();
+
+        Title = gameState.ToString();
     }
 
 

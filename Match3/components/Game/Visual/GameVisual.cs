@@ -65,21 +65,6 @@ public class GameVisual : GameState
         // Button
         _button = new Button { Content = "Click" };
         _button.Click += routedEventHandler;
-        void a(object? sender, RoutedEventArgs e)
-        {
-            if (_progressBar.Value != 60)
-            {
-                _progressBar.Value++;
-                Score.Value++;
-                if (Rnd.Next(10) == 4)
-                    Score.Value = 0;
-            }
-            else
-            {
-                _progressBar.Value = 0;
-                routedEventHandler(sender, e);
-            }
-        };
         _status.Children.Add(_button);
         Grid.SetColumn(_button, column++);
 
@@ -114,4 +99,17 @@ public class GameVisual : GameState
     {
 
     }
+
+    protected override void InfoForNextState()
+    {
+        base.InfoForNextState();
+
+        if(nextState is EndMenu ending)
+        {
+            ending.Score = Score;
+        }
+    }
+
+    public override string ToString()
+        => "Game";
 }

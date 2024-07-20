@@ -40,6 +40,9 @@ public class MainMenu : GameState
         panel.Children.Remove(grid);
     }
 
+    public override string ToString()
+        => "Menu";
+
     public override void Update()
     {
 
