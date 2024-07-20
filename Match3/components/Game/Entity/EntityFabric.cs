@@ -3,6 +3,6 @@
 public static class EntityFabric
 {
     public static BaseEntity RandomCreate(Vector2 position)
-    => new BaseEntity(position, (EntityType)Rnd.Next(5));
+    => new Entity(position, (EntityColor)Rnd.Next(5));
 
 }

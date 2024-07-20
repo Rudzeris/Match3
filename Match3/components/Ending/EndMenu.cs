@@ -20,7 +20,7 @@ class EndMenu : GameState
         grid.RowDefinitions[1].Height = new GridLength(30);
         grid.ColumnDefinitions[1].Width = new GridLength(80);
 
-        button = new Button { Content = "You Win!\nGo back Menu" };
+        button = new Button { Content = "Ok" };
         grid.Children.Add(button);
         Grid.SetColumn(button, 1);
         Grid.SetRow(button, 1);

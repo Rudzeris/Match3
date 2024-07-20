@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
 
 namespace Match3;
-class Score
+public class Score
 {
     private readonly ContentControl content;
     public Score(ContentControl content)
