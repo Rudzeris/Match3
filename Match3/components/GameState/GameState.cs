@@ -14,12 +14,20 @@ public abstract class GameState
     public abstract void Start();
     public abstract void Update();
     public abstract void Stop();
-    public static void NextState(ref GameState state)
+    public GameState NextState()
     {
-        if (state.nextState is null)
-            return;
-        state.Stop();
-        state = state.nextState;
-        state.Start();
+        if (nextState is null)
+            return this;
+
+        InfoForNextState();
+        StateUpdate();
+
+        return nextState;
+    }
+    protected virtual void InfoForNextState() { }
+    private void StateUpdate()
+    {
+        Stop();
+        nextState?.Start();
     }
 }
