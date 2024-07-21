@@ -150,6 +150,7 @@ public class GameVisual : GameState
                 {
                     Brush brush = ColorForButton.GetColor(entity.EntityColor);
                     buttons[i, j].Background = brush;
+                    buttons[i, j].Content = GameGrid[i,j];
                 }
             }
         }
@@ -182,6 +183,11 @@ public class GameVisual : GameState
         {
             ending.Score = Score;
         }
+    }
+
+    public void Swap(Vector2 left, Vector2 right)
+    {
+        Vector2 direction = left - right;
     }
 
     public override string ToString()

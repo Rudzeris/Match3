@@ -2,7 +2,7 @@
 
 public class Entity : BaseEntity
 {
-    public Entity(Vector2 position, EntityColor entityType) : base(position,entityType)
+    public Entity(Vector2 position, EntityColor entityType) : base(position, entityType)
     {
     }
 
@@ -12,5 +12,5 @@ public class Entity : BaseEntity
     }
 
     public override string ToString()
-        => "E";
+        => $"{Position.Y},{Position.X}";
 }

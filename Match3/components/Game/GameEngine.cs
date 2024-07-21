@@ -57,6 +57,13 @@ public class GameEngine
                 break;
             case ClickType.Animation:
                 await Task.Delay(delayMs);
+
+                // TODO: swap entity
+                SwapEntity();
+                // TODO: activate entity
+
+                await Task.Delay(delayMs);
+
                 if (FirstEntity != null)
                     _window.UnSelect(FirstEntity.Position);
                 if (SecondEntity != null)
@@ -66,6 +73,14 @@ public class GameEngine
                 break;
         }
         _window.Update();
+    }
+
+    private void SwapEntity()
+    {
+        if(FirstEntity == null || SecondEntity == null) return;
+
+        _window.Swap(FirstEntity.Position, SecondEntity.Position);
+        gameGrid.Swap(FirstEntity,SecondEntity);
     }
 
     public void Start()
