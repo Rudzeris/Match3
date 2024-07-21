@@ -1,9 +1,4 @@
-﻿using System.Drawing;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
-
-namespace Match3;
+﻿namespace Match3;
 
 public enum ClickType
 {
@@ -11,9 +6,9 @@ public enum ClickType
 }
 public class GameEngine
 {
+    private IChecker checker;
     private int delayMs = 200;
-    private GameGrid gameGrid { get; set; }
-    public IGameGrid GameGrid { get => gameGrid; }
+    public GameGrid GameGrid { get; private set; }
     public Score Score { get; set; }
     private readonly GameVisual _window;
 
@@ -24,12 +19,13 @@ public class GameEngine
     public GameEngine(GameVisual window)
     {
         _window = window;
-        gameGrid = new GameGrid(new Size(8, 8));
+        GameGrid = new GameGrid(new Size(8, 8));
+        checker = new Checker(GameGrid);
     }
 
     public async void Click(Vector2 position)
     {
-        BaseEntity? entity = gameGrid[position];
+        BaseEntity? entity = GameGrid[position];
         if (entity == null)
             return;
         switch (_clickType)
@@ -75,17 +71,24 @@ public class GameEngine
         _window.Update();
     }
 
+    private void CheckAndActivate(BaseEntity entity)
+    {
+        // Checking
+        CheckResult result = checker.CheckCells(entity,out _);
+        // Remove and Activate
+    }
+
     private void SwapEntity()
     {
-        if(FirstEntity == null || SecondEntity == null) return;
+        if (FirstEntity == null || SecondEntity == null) return;
 
         _window.Swap(FirstEntity.Position, SecondEntity.Position);
-        gameGrid.Swap(FirstEntity,SecondEntity);
+        GameGrid.Swap(FirstEntity, SecondEntity);
     }
 
     public void Start()
     {
-        gameGrid.FillGrid();
+        GameGrid.FillGrid();
         _clickType = ClickType.FirstClick;
         _window.Update();
     }

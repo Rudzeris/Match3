@@ -1,5 +1,4 @@
-﻿using System.CodeDom;
-using System.ComponentModel.DataAnnotations;
+﻿using Match3.components.Other;
 
 namespace Match3;
 
@@ -18,5 +17,14 @@ public struct Vector2
     public static Vector2 operator -(Vector2 v1, Vector2 v2)
         => new Vector2(v1.X - v2.X, v1.Y - v2.Y);
 
+    public static Vector2 operator +(Vector2 v1, Direction dir)
+        => v1 + dir switch
+        {
+            Direction.Up => new Vector2(0, -1),
+            Direction.Down => new Vector2(0, 1),
+            Direction.Left => new Vector2(-1, 0),
+            Direction.Right => new Vector2(1, 0),
+            _ => new Vector2(0, 0)
+        };
 
 }

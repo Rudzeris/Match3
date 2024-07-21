@@ -1,3 +1,3 @@
 ﻿namespace Match3;
 
-public enum CheckResult { Remove, Bomb, Line, None }
+public enum CheckResult { Remove, Bomb, Line, HorizontalLine, VerticalLine, None }
