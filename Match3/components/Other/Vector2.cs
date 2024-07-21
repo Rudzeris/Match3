@@ -2,9 +2,9 @@
 
 public struct Vector2
 {
-    public uint X;
-    public uint Y;
-    public Vector2(uint x, uint y)
+    public int X;
+    public int Y;
+    public Vector2(int x, int y)
     {
         X = x; Y = y;
     }

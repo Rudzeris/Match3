@@ -2,13 +2,18 @@
 
 public abstract class BaseEntity
 {
-    public Vector2 Position { get; private set; }
-    public EntityColor EntityType { get; init; }
-    public BaseEntity(Vector2 position, EntityColor entityType)
+    public bool IsDeleted { get; private set; }
+    public virtual Vector2 Position { get; private set; }
+    public virtual EntityColor EntityColor { get; init; }
+
+    public BaseEntity(Vector2 position, EntityColor entityColor)
     {
         Position = position;
-        EntityType = entityType;
+        EntityColor = entityColor;
+        IsDeleted = false;
     }
 
     public abstract void Action();
+
+    public abstract override string ToString();
 }

@@ -8,6 +8,9 @@ public class Entity : BaseEntity
 
     public override void Action()
     {
-
+        // TODO: Запуск проверки
     }
+
+    public override string ToString()
+        => "E";
 }
