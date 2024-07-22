@@ -50,18 +50,18 @@ public class GameGrid : IGameGrid
             }
         }
     }
-    public void Swap(BaseEntity? first, BaseEntity? second)
+    public bool Swap(BaseEntity? first, BaseEntity? second)
     {
-        if(first == null || second == null) return;
+        if(first == null || second == null) return false;
 
-        if (Vector2.Length(first.Position, second.Position) != 1) return;
+        if (Vector2.Length(first.Position, second.Position) != 1) return false;
 
         if (!CheckedEntity(first.Position) || !CheckedEntity(second.Position))
-            return;
+            return false;
 
         if (first != grid[first.Position.Y, first.Position.X] ||
             second != grid[second.Position.Y, second.Position.X])
-            return;
+            return false;
 
         this[first.Position] = second;
         this[second.Position] = first;
@@ -69,5 +69,6 @@ public class GameGrid : IGameGrid
         Vector2 position = first.Position;
         first.Position = second.Position;
         second.Position = position;
+        return true;
     }
 }

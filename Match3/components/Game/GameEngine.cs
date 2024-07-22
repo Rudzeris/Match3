@@ -10,7 +10,7 @@ public enum ClickType
 public class GameEngine
 {
     private IChecker checker;
-    private int delayMs = 200;
+    private int delayMs = 100;
     public GameGrid GameGrid { get; private set; }
     public Score Score { get; set; }
     private readonly GameVisual _window;
@@ -21,7 +21,7 @@ public class GameEngine
 
     private DispatcherTimer _timer;
 
-    public uint TimeValue {get; private set;}
+    public uint TimeValue { get; private set; }
     public uint MaxTimeValue { get; private set; }
 
     public GameEngine(GameVisual window, RoutedEventHandler exit)
@@ -31,8 +31,8 @@ public class GameEngine
         GameGrid = new GameGrid(new Size(8, 8));
         checker = new Checker(GameGrid);
         _timer = new DispatcherTimer();
-        _timer.Interval = new TimeSpan(0,0,1);
-        MaxTimeValue = 5;
+        _timer.Interval = new TimeSpan(0, 0, 1);
+        MaxTimeValue = 60;
         _timer.Tick += (object? sender, EventArgs e) =>
         {
             _window.UpdateTime();
@@ -49,7 +49,7 @@ public class GameEngine
     public async void Click(Vector2 position)
     {
         BaseEntity? entity = GameGrid[position];
-        if (entity == null)
+        if (entity == null || _clickType == ClickType.Animation)
             return;
         switch (_clickType)
         {
@@ -71,24 +71,48 @@ public class GameEngine
                     SecondEntity = entity;
                     _window.Select(entity.Position);
                     _clickType = ClickType.Animation;
-                    Click(position);
-                }
-                break;
-            case ClickType.Animation:
-                await Task.Delay(delayMs);
 
-                // TODO: swap entity
-                SwapEntity();
-                // TODO: activate entity
 
-                await Task.Delay(delayMs);
+                    if (FirstEntity == null || SecondEntity == null)
+                    {
+                        _clickType = ClickType.FirstClick;
+                        break;
+                    }
+                    await Task.Delay(delayMs);
+                    _window.Select(FirstEntity.Position);
+                    _window.Select(SecondEntity.Position);
 
-                if (FirstEntity != null)
+                    await Task.Delay(delayMs);
+                    bool swap = SwapEntity();
+                    await Task.Delay(delayMs);
+
                     _window.UnSelect(FirstEntity.Position);
-                if (SecondEntity != null)
                     _window.UnSelect(SecondEntity.Position);
-                FirstEntity = SecondEntity = null;
-                _clickType = ClickType.FirstClick;
+
+                    if (swap)
+                    {
+
+                        CheckAndActivate(FirstEntity);
+                        CheckAndActivate(SecondEntity);
+                        _window.Update();
+                        if (true)
+                        {
+                            await Task.Delay(delayMs * 3);
+                            _window.Select(FirstEntity.Position);
+                            _window.Select(SecondEntity.Position);
+
+                            await Task.Delay(delayMs);
+                            SwapEntity();
+                            await Task.Delay(delayMs);
+
+                            _window.UnSelect(FirstEntity.Position);
+                            _window.UnSelect(SecondEntity.Position);
+                        }
+                    }
+
+                    FirstEntity = SecondEntity = null;
+                    _clickType = ClickType.FirstClick;
+                }
                 break;
         }
         _window.Update();
@@ -96,17 +120,17 @@ public class GameEngine
 
     private void CheckAndActivate(BaseEntity entity)
     {
+        if (entity == null) return;
         // Checking
         CheckResult result = checker.CheckCells(entity, out _);
         // Remove and Activate
     }
 
-    private void SwapEntity()
+    private bool SwapEntity()
     {
-        if (FirstEntity == null || SecondEntity == null) return;
+        if (FirstEntity == null || SecondEntity == null) return false;
 
-        _window.Swap(FirstEntity.Position, SecondEntity.Position);
-        GameGrid.Swap(FirstEntity, SecondEntity);
+        return GameGrid.Swap(FirstEntity, SecondEntity);
     }
 
     public void Start()

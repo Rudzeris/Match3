@@ -175,11 +175,6 @@ public class GameVisual : GameState
         }
     }
 
-    public void Swap(Vector2 left, Vector2 right)
-    {
-        Vector2 direction = left - right;
-    }
-
     public override string ToString()
         => "Game";
 }
