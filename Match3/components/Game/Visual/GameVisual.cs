@@ -23,9 +23,8 @@ public class GameVisual : GameState
     private Size selectSize;
     private Brush selectColor;
 
-    public GameVisual(Panel panel, RoutedEventHandler routedEventHandler) : base(panel)
+    public GameVisual(Panel panel, RoutedEventHandler exitHandler) : base(panel)
     {
-
 
         defaultSize = new Size(40, 40);
         selectSize = new Size(20, 20);
@@ -51,10 +50,6 @@ public class GameVisual : GameState
         _status = new Grid();
         _status.ColumnDefinitions.Add(
             new ColumnDefinition()
-            { Width = GridLength.Auto }
-            );
-        _status.ColumnDefinitions.Add(
-            new ColumnDefinition()
             );
         _status.ColumnDefinitions.Add(
             new ColumnDefinition()
@@ -62,27 +57,6 @@ public class GameVisual : GameState
             );
         mainGrid.Children.Add(_status);
         Grid.SetRow(_status, 1);
-
-        int column = 0;
-        // Label
-        _label = new Label();
-        _label.FontSize = 12;
-        _status.Children.Add(_label);
-        Grid.SetColumn(_status, column++);
-
-        // ProgressBar
-        _progressBar = new ProgressBar();
-        Grid.SetRow(_progressBar, 1);
-        _status.Children.Add(_progressBar);
-        _progressBar.Maximum = 60;
-        Grid.SetColumn(_progressBar, column++);
-
-        // Button
-        _button = new Button { Content = "Click" };
-        _button.Click += routedEventHandler;
-        _status.Children.Add(_button);
-        Grid.SetColumn(_button, column++);
-
 
         // GameGrid
         _gameGrid = new Grid();
@@ -93,14 +67,25 @@ public class GameVisual : GameState
         }
         mainGrid.Children.Add(_gameGrid);
 
-
         // GameEngine
-        _engine = new GameEngine(this);
+        _engine = new GameEngine(this, exitHandler);
         this.GameGrid = _engine.GameGrid;
+
+        // Button
+        _button = new Button { Content = "Click" };
+        _button.Click += (object? s, RoutedEventArgs e) => { _engine.Stop(); };
+        _status.Children.Add(_button);
+        Grid.SetColumn(_button, 1);
+
+        // ProgressBar
+        _progressBar = new ProgressBar();
+        Grid.SetRow(_progressBar, 1);
+        _status.Children.Add(_progressBar);
+        _progressBar.Maximum = _progressBar.Value = _engine.MaxTimeValue;
+        Grid.SetColumn(_progressBar, 0);
 
         // Buttons
         buttons = new ButtonBase[GameGrid.Y, GameGrid.X];
-
 
         for (int i = 0; i < GameGrid.Y; i++)
         {
@@ -146,14 +131,19 @@ public class GameVisual : GameState
         {
             for (int j = 0; j < GameGrid.X; j++)
             {
-                if (GameGrid[i, j] is BaseEntity entity && entity!=null)
+                if (GameGrid[i, j] is BaseEntity entity && entity != null)
                 {
                     Brush brush = ColorForButton.GetColor(entity.EntityColor);
                     buttons[i, j].Background = brush;
-                    buttons[i, j].Content = GameGrid[i,j];
+                    buttons[i, j].Content = GameGrid[i, j];
                 }
             }
         }
+    }
+
+    public void UpdateTime()
+    {
+        _progressBar.Value = _progressBar.Maximum - _engine.TimeValue;
     }
     public void ButtonClick(object? sender, RoutedEventArgs e)
     {

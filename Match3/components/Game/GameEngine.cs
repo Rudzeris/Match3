@@ -1,4 +1,7 @@
-﻿namespace Match3;
+﻿using System.Windows;
+using System.Windows.Threading;
+
+namespace Match3;
 
 public enum ClickType
 {
@@ -11,16 +14,36 @@ public class GameEngine
     public GameGrid GameGrid { get; private set; }
     public Score Score { get; set; }
     private readonly GameVisual _window;
-
     public BaseEntity? FirstEntity { get; set; }
     public BaseEntity? SecondEntity { get; set; }
     private ClickType _clickType;
+    private readonly RoutedEventHandler exit;
 
-    public GameEngine(GameVisual window)
+    private DispatcherTimer _timer;
+
+    public uint TimeValue {get; private set;}
+    public uint MaxTimeValue { get; private set; }
+
+    public GameEngine(GameVisual window, RoutedEventHandler exit)
     {
+        this.exit = exit;
         _window = window;
         GameGrid = new GameGrid(new Size(8, 8));
         checker = new Checker(GameGrid);
+        _timer = new DispatcherTimer();
+        _timer.Interval = new TimeSpan(0,0,1);
+        MaxTimeValue = 5;
+        _timer.Tick += (object? sender, EventArgs e) =>
+        {
+            _window.UpdateTime();
+            TimeValue++;
+            if (TimeValue > MaxTimeValue)
+            {
+                TimeValue = 0;
+                _window.UpdateTime();
+                this.Stop();
+            }
+        };
     }
 
     public async void Click(Vector2 position)
@@ -74,7 +97,7 @@ public class GameEngine
     private void CheckAndActivate(BaseEntity entity)
     {
         // Checking
-        CheckResult result = checker.CheckCells(entity,out _);
+        CheckResult result = checker.CheckCells(entity, out _);
         // Remove and Activate
     }
 
@@ -88,8 +111,16 @@ public class GameEngine
 
     public void Start()
     {
+        _timer.Start();
         GameGrid.FillGrid();
         _clickType = ClickType.FirstClick;
         _window.Update();
     }
+
+    public void Stop()
+    {
+        _timer.Stop();
+        exit(this, new RoutedEventArgs());
+    }
+
 }
