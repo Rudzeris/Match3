@@ -9,30 +9,30 @@ public class Checker : IChecker
         GameGrid = gameGrid;
     }
 
-    private CheckResult GetResult(int number)
+    private CheckResult GetResult(int number, bool vertical = true)
         => number >= 5 ? CheckResult.Bomb :
-            number == 4 ? CheckResult.Line :
+            number == 4 ? (vertical ? CheckResult.VerticalLine : CheckResult.HorizontalLine) :
             number == 3 ? CheckResult.Remove :
             CheckResult.None;
 
     public CheckResult CheckCells(BaseEntity baseEntity, out List<BaseEntity> list)
     {
-        // Up -> Down
+        // Up -> DownEntities
         list = new List<BaseEntity>();
         for (int i = 0; i <= 2; i += 2)
-            CheckCells(baseEntity.Position, (Direction)i, baseEntity.EntityColor,list);
+            CheckCells(baseEntity.Position + (Direction)i, (Direction)i, baseEntity.EntityColor, list);
+        list.Add(baseEntity);
 
         CheckResult result = GetResult(list.Count);
-        if(result == CheckResult.Line) result = CheckResult.VerticalLine;
 
         if (result == CheckResult.None)
         {
             list.Clear();
-            for (int i = 0; i <= 2; i += 2)
-                CheckCells(baseEntity.Position, (Direction)i, baseEntity.EntityColor, list);
+            for (int i = 1; i <= 3; i += 2)
+                CheckCells(baseEntity.Position + (Direction)i, (Direction)i, baseEntity.EntityColor, list);
+            list.Add(baseEntity);
 
-            result = GetResult(list.Count);
-            if (result == CheckResult.Line) result = CheckResult.HorizontalLine;
+            result = GetResult(list.Count, false);
         }
         return result;
     }
@@ -42,9 +42,11 @@ public class Checker : IChecker
         BaseEntity? entity = GameGrid[position];
         if (entity == null ||
             position.X < 0 || position.Y < 0 ||
-            position.X >= GameGrid.X || position.Y >= GameGrid.Y
+            position.X >= GameGrid.X || position.Y >= GameGrid.Y ||
+            entity.EntityColor != color
             ) return;
 
+        CheckCells(position + direction, direction, color, list);
         list.Add(entity);
     }
 

@@ -16,7 +16,9 @@ public abstract class BaseEntity
     public void SetPosition(int Y,int X)
         => Position = new Vector2(X,Y);
 
-    public abstract void Action();
+    public virtual void Activate() {
+        this.IsDeleted = true;
+    }
 
     public abstract override string ToString();
 }

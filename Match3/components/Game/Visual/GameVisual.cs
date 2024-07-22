@@ -21,16 +21,17 @@ public class GameVisual : GameState
     private Size defaultSize;
     private Brush defaultColor;
     private Size selectSize;
-    private Brush selectColor;
+    private Size bombSize;
+    private Size lineSize;
 
     public GameVisual(Panel panel, RoutedEventHandler exitHandler) : base(panel)
     {
 
         defaultSize = new Size(40, 40);
         selectSize = new Size(20, 20);
+        bombSize = new Size(35, 35);
 
         defaultColor = Brushes.White;
-        selectColor = Brushes.Red;
 
         // MainPanel
         Grid mainGrid = new Grid();
@@ -127,15 +128,29 @@ public class GameVisual : GameState
 
     private void VisualGameGrid()
     {
+        BaseEntity? entity;
         for (int i = 0; i < GameGrid.Y; i++)
         {
             for (int j = 0; j < GameGrid.X; j++)
             {
-                if (GameGrid[i, j] is BaseEntity entity && entity != null)
+                entity = GameGrid[i, j];
+                Brush brush = ColorForButton.GetColor(entity?.EntityColor);
+                buttons[i, j].Background = brush;
+                buttons[i, j].Content = GameGrid[i, j];
+                buttons[i, j].BorderThickness = new Thickness(
+                    entity is Entity ? 0 :
+                    5
+                    );
+                if(buttons[i,j].Height == defaultSize.Height && 
+                    buttons[i,j].Width == defaultSize.Width)
                 {
-                    Brush brush = ColorForButton.GetColor(entity.EntityColor);
-                    buttons[i, j].Background = brush;
-                    buttons[i, j].Content = GameGrid[i, j];
+                    switch (entity)
+                    {
+                        case Bomb:
+                            buttons[i, j].Height = bombSize.Height;
+                            buttons[i,j].Width = bombSize.Width;
+                            break;
+                    }
                 }
             }
         }

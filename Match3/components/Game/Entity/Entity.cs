@@ -6,9 +6,9 @@ public class Entity : BaseEntity
     {
     }
 
-    public override void Action()
+    public override void Activate()
     {
-        // TODO: Запуск проверки
+        base.Activate();
     }
 
     public override string ToString()

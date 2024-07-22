@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace Match3;
@@ -91,11 +92,11 @@ public class GameEngine
 
                     if (swap)
                     {
-
-                        CheckAndActivate(FirstEntity);
-                        CheckAndActivate(SecondEntity);
-                        _window.Update();
-                        if (true)
+                        WindowUpdate();
+                        bool destroy = DestroyEntities(FirstEntity);
+                        destroy = DestroyEntities(SecondEntity) || destroy;
+                        WindowUpdate();
+                        if (!destroy)
                         {
                             await Task.Delay(delayMs * 3);
                             _window.Select(FirstEntity.Position);
@@ -108,6 +109,20 @@ public class GameEngine
                             _window.UnSelect(FirstEntity.Position);
                             _window.UnSelect(SecondEntity.Position);
                         }
+                        else
+                        {
+                            await Task.Delay(delayMs);
+                            GameGrid.DownEntities();
+                            await Task.Delay(delayMs * 3);
+                            GameGrid.AddEntities();
+                            await Task.Delay(delayMs);
+                        }
+                        WindowUpdate();
+
+                    }
+                    else
+                    {
+
                     }
 
                     FirstEntity = SecondEntity = null;
@@ -118,12 +133,48 @@ public class GameEngine
         _window.Update();
     }
 
-    private void CheckAndActivate(BaseEntity entity)
+    private void SearchAndDestroy()
     {
-        if (entity == null) return;
+        BaseEntity? entity = null;
+        while (true)
+            for (int i = 0; i < GameGrid.Y; i++)
+            {
+                for (int j = 0; j < GameGrid.X; j++)
+                {
+                    entity = GameGrid[i, j];
+                    if (entity != null && !entity.IsDeleted)
+                    {
+                        DestroyEntities(entity);
+                    }
+                }
+            }
+    }
+
+    private bool DestroyEntities(BaseEntity entity)
+    {
+        if (entity == null || entity.IsDeleted) return false;
+
+        List<BaseEntity> entities;
         // Checking
-        CheckResult result = checker.CheckCells(entity, out _);
-        // Remove and Activate
+        CheckResult result = checker.CheckCells(entity, out entities);
+
+        if (result == CheckResult.None) return false;
+        foreach (var ent in entities)
+        {
+            ent.Activate();
+        }
+
+        GameGrid[entity.Position] = result switch
+        {
+            CheckResult.Bomb => new Bomb(entity.Position, entity.EntityColor, GameGrid),
+            _ => entity
+        };
+        return true;
+    }
+
+    public void WindowUpdate()
+    {
+        _window.Update();
     }
 
     private bool SwapEntity()
@@ -135,10 +186,12 @@ public class GameEngine
 
     public void Start()
     {
+        TimeValue = 0;
+        _window.UpdateTime();
         _timer.Start();
-        GameGrid.FillGrid();
+        GameGrid.RandomFillGrid();
         _clickType = ClickType.FirstClick;
-        _window.Update();
+        WindowUpdate();
     }
 
     public void Stop()

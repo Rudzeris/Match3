@@ -8,7 +8,7 @@ public enum EntityColor
 
 public static class ColorForButton
 {
-    public static Brush GetColor(EntityColor color)
+    public static Brush GetColor(EntityColor? color)
         => color switch
         {
             EntityColor.Type1 => Brushes.Red,

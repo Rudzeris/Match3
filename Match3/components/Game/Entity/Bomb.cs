@@ -2,18 +2,24 @@
 
 public class Bomb : BaseEntity
 {
-    private readonly Entity entity;
-    public override Vector2 Position { get => entity.Position; }
-    public override EntityColor EntityColor { get => entity.EntityColor; }
-
-    public Bomb(Entity entity) : base(entity.Position, entity.EntityColor)
+    private readonly IGameGrid _gameGrid;
+    public Bomb(Vector2 position, EntityColor entityColor, IGameGrid grid) : base(position, entityColor)
     {
-        this.entity = entity;
+        _gameGrid = grid;
     }
 
-    public override void Action()
+    public override void Activate()
     {
-
+        base.Activate();
+        for (int i = Position.Y-1; i <= Position.Y+1; i++)
+        {
+            for(int j = Position.X-1; j <= Position.X+1; j++)
+            {
+                BaseEntity? entity = _gameGrid[i, j];
+                if(entity != null)
+                    entity.Activate();
+            }
+        }
     }
 
     public override string ToString()

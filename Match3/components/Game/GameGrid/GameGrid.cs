@@ -40,7 +40,7 @@ public class GameGrid : IGameGrid
 
         return true;
     }
-    public void FillGrid()
+    public void RandomFillGrid()
     {
         for (int i = 0; i < grid.GetLength(0); i++)
         {
@@ -70,5 +70,39 @@ public class GameGrid : IGameGrid
         first.Position = second.Position;
         second.Position = position;
         return true;
+    }
+    public void DownEntities()
+    {
+        for(int i = grid.GetLength(0)-2; i >= 0; i--)
+        {
+            for (int j = grid.GetLength(1) - 1; j >= 0; j--)
+            {
+                int k = i;
+                while (k+1<grid.GetLength(0) && grid[k+1, j].IsDeleted && !grid[k,j].IsDeleted)
+                {
+                    BaseEntity first = grid[k+1, j];
+                    BaseEntity second = grid[k, j];
+                    this[first.Position] = second;
+                    this[second.Position] = first;
+
+                    Vector2 position = first.Position;
+                    first.Position = second.Position;
+                    second.Position = position;
+
+                    k++;
+                }
+            }
+        }
+    }
+    public void AddEntities()
+    {
+        for (int i = grid.GetLength(0) - 1; i >= 0; i--)
+        {
+            for (int j = grid.GetLength(1) - 1; j >= 0; j--)
+            {
+                if (grid[i, j].IsDeleted)
+                    grid[i, j] = EntityFabric.GetEntity(i,j);
+            }
+        }
     }
 }
