@@ -8,18 +8,20 @@ public class Bomb : BaseEntity
         _gameGrid = grid;
     }
 
-    public override void Activate()
+    public override int Activate()
     {
-        base.Activate();
+        int count = base.Activate();
+
         for (int i = Position.Y-1; i <= Position.Y+1; i++)
         {
             for(int j = Position.X-1; j <= Position.X+1; j++)
             {
                 BaseEntity? entity = _gameGrid[i, j];
                 if(entity != null)
-                    entity.Activate();
+                    count+=entity.Activate();
             }
         }
+        return count;
     }
 
     public override string ToString()

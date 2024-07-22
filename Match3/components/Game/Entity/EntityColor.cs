@@ -15,7 +15,7 @@ public static class ColorForButton
             EntityColor.Type2 => Brushes.Green,
             EntityColor.Type3 => Brushes.Blue,
             EntityColor.Type4 => Brushes.Yellow,
-            EntityColor.Type5 => Brushes.Chocolate,
+            EntityColor.Type5 => new SolidColorBrush(Color.FromRgb(0x80,0x00,0x80)),
             _ => Brushes.White
         };
 }

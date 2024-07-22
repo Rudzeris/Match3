@@ -6,10 +6,9 @@ public class Entity : BaseEntity
     {
     }
 
-    public override void Activate()
-    {
-        base.Activate();
-    }
+    public override int Activate()
+        => base.Activate();
+
 
     public override string ToString()
         => $"{Position.Y},{Position.X}";
