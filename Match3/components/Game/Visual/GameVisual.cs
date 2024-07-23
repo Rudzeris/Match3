@@ -15,7 +15,7 @@ public class GameVisual : GameState
     private Grid _status;
     private readonly IGameGrid GameGrid;
     public Score Score => _engine.Score;
-    private Label _label;
+    private Label _scoreLabel;
     private ButtonBase[,] buttons;
 
     private Size defaultSize;
@@ -50,12 +50,16 @@ public class GameVisual : GameState
         // StatusPanel
         _status = new Grid();
         _status.ColumnDefinitions.Add(
+            new ColumnDefinition() { Width = GridLength.Auto }
+            );
+        _status.ColumnDefinitions.Add(
             new ColumnDefinition()
             );
         _status.ColumnDefinitions.Add(
             new ColumnDefinition()
             { Width = new GridLength(40) }
             );
+        _status.Background = defaultColor;
         mainGrid.Children.Add(_status);
         Grid.SetRow(_status, 1);
 
@@ -73,17 +77,22 @@ public class GameVisual : GameState
         this.GameGrid = _engine.GameGrid;
 
         // Button
-        _button = new Button { Content = "Click" };
+        _button = new Button { Content = "Finish" };
         _button.Click += (object? s, RoutedEventArgs e) => { _engine.Stop(); };
+        _button.Margin = new Thickness(2);
         _status.Children.Add(_button);
-        Grid.SetColumn(_button, 1);
+        Grid.SetColumn(_button, 2);
 
         // ProgressBar
         _progressBar = new ProgressBar();
-        Grid.SetRow(_progressBar, 1);
         _status.Children.Add(_progressBar);
         _progressBar.Maximum = _progressBar.Value = _engine.MaxTimeValue;
-        Grid.SetColumn(_progressBar, 0);
+        _progressBar.Margin = new Thickness(2); 
+        Grid.SetColumn(_progressBar, 1);
+
+        // ScoreLabel
+        _scoreLabel = new Label();
+        _status.Children.Add(_scoreLabel);
 
         // Buttons
         buttons = new ButtonBase[GameGrid.Y, GameGrid.X];
@@ -128,6 +137,7 @@ public class GameVisual : GameState
 
     private void VisualGameGrid()
     {
+        _scoreLabel.Content = $"Score: {Score.Value}";
         BaseEntity? entity;
         for (int i = 0; i < GameGrid.Y; i++)
         {
@@ -141,14 +151,14 @@ public class GameVisual : GameState
                     entity is Entity ? 0 :
                     5
                     );
-                if(buttons[i,j].Height == defaultSize.Height && 
-                    buttons[i,j].Width == defaultSize.Width)
+                if (buttons[i, j].Height == defaultSize.Height &&
+                    buttons[i, j].Width == defaultSize.Width)
                 {
                     switch (entity)
                     {
                         case Bomb:
                             buttons[i, j].Height = bombSize.Height;
-                            buttons[i,j].Width = bombSize.Width;
+                            buttons[i, j].Width = bombSize.Width;
                             break;
                     }
                 }
