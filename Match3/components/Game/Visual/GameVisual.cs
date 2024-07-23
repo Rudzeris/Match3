@@ -38,7 +38,7 @@ public class GameVisual : GameState
         Grid mainGrid = new Grid();
         _mainPanel = mainGrid;
 
-        mainGrid.Background = Brushes.DarkCyan;
+        mainGrid.Background = Brushes.Gray;
 
         mainGrid.RowDefinitions.Add(
             new RowDefinition()
@@ -105,6 +105,8 @@ public class GameVisual : GameState
                 buttons[i, j] = new Button();
                 buttons[i, j].Height = defaultSize.Height;
                 buttons[i, j].Width = defaultSize.Width;
+                buttons[i, j].BorderBrush = Brushes.DarkOrange;
+
                 _gameGrid.Children.Add(buttons[i, j]);
                 Grid.SetRow(buttons[i, j], i);
                 Grid.SetColumn(buttons[i, j], j);
@@ -150,7 +152,8 @@ public class GameVisual : GameState
                 buttons[i, j].Content = GameGrid[i, j];
                 buttons[i, j].BorderThickness = new Thickness(
                     entity is Entity ? 0 :
-                    5
+                    entity is null ? 7 :
+                    3
                     );
             }
         }
