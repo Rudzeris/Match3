@@ -126,7 +126,7 @@ public class GameEngine
                             await Task.Delay(delayMs * 3);
                             GameGrid.AddEntities();
                             await Task.Delay(delayMs);
-                            SearchAndDestroy(true);
+                            GridCheck(true);
                         }
                         WindowUpdate();
 
@@ -145,7 +145,7 @@ public class GameEngine
         _window.Update();
     }
 
-    private async void SearchAndDestroy(bool show = false)
+    private async void GridCheck(bool show = false)
     {
         _operation = true;
         BaseEntity? entity = null;
@@ -226,7 +226,7 @@ public class GameEngine
         _timer.Start();
         GameGrid.RandomFillGrid();
         _clickType = ClickType.FirstClick;
-        SearchAndDestroy();
+        GridCheck();
         _score.Value = 0;
         WindowUpdate();
     }
