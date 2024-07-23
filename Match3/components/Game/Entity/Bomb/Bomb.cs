@@ -25,5 +25,5 @@ public class Bomb : BaseEntity
     }
 
     public override string ToString()
-        => $"{Position.Y},{Position.X}";
+        => $"B";
 }

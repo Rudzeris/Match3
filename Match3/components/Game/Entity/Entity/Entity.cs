@@ -11,5 +11,5 @@ public class Entity : BaseEntity
 
 
     public override string ToString()
-        => $"{Position.Y},{Position.X}";
+        => $"";
 }

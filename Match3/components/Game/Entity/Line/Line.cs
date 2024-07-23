@@ -10,7 +10,7 @@ public abstract class Line : BaseEntity
         this.gameGrid = gameGrid;
     }
     public override string ToString()
-        => $"{Position.Y},{Position.X}";
+        => $"L";
 }
 
 public class HorizontalLine : Line
@@ -31,6 +31,8 @@ public class HorizontalLine : Line
         }
         return count;
     }
+    public override string ToString()
+        => $"H";
 }
 
 public class VerticalLine : Line
@@ -50,4 +52,7 @@ public class VerticalLine : Line
         }
         return count;
     }
+    public override string ToString()
+        => $"V";
+
 }

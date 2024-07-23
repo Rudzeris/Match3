@@ -152,28 +152,6 @@ public class GameVisual : GameState
                     entity is Entity ? 0 :
                     5
                     );
-
-                if (entity != _engine.FirstEntity && entity != _engine.SecondEntity)
-                    switch (entity)
-                    {
-                        case Bomb:
-                            buttons[i, j].Height = bombSize.Height;
-                            buttons[i, j].Width = bombSize.Width;
-                            break;
-                        case VerticalLine:
-                            buttons[i, j].Height = defaultSize.Height;
-                            buttons[i, j].Width = lineSize.Width;
-                            break;
-                        case HorizontalLine:
-                            buttons[i, j].Height = lineSize.Height;
-                            buttons[i, j].Width = defaultSize.Width;
-                            break;
-                        default:
-                            buttons[i, j].Height = defaultSize.Height;
-                            buttons[i, j].Width = defaultSize.Width;
-                            break;
-                    }
-
             }
         }
     }
