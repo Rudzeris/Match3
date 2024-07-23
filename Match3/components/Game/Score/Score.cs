@@ -3,22 +3,18 @@
 namespace Match3;
 public struct Score
 {
-    private readonly ContentControl content;
-    public Score(ContentControl content)
-    {
-        this.content = content;
-        this.Value = 0;
-    }
+    public event EventHandler UpdateScore;
     private int score;
-    public int Value { get => score;
+    public int Value
+    {
+        get => score;
         set
         {
-            if (value == 0)
-            {
-                MaxValue = score>MaxValue?score:MaxValue;
-            }
             score = value;
-            content.Content = ToString();
+            if (score > MaxValue)
+                MaxValue = score;
+
+            UpdateScore?.Invoke(this, EventArgs.Empty);
         }
     }
     public int MaxValue { get; private set; }

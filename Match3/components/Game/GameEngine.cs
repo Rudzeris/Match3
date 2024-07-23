@@ -13,7 +13,8 @@ public class GameEngine
     private IChecker checker;
     private int delayMs = 100;
     public GameGrid GameGrid { get; private set; }
-    public Score Score { get; set; }
+    private Score _score;
+    public Score Score => _score;
     private readonly GameVisual _window;
     public BaseEntity? FirstEntity { get; set; }
     public BaseEntity? SecondEntity { get; set; }
@@ -27,6 +28,8 @@ public class GameEngine
 
     public GameEngine(GameVisual window, RoutedEventHandler exit)
     {
+        _score = new Score();
+        _score.UpdateScore += window.UpdateScore;
         this.exit = exit;
         _window = window;
         GameGrid = new GameGrid(new Size(8, 8));
@@ -161,12 +164,14 @@ public class GameEngine
         if (result == CheckResult.None) return false;
         foreach (var ent in entities)
         {
-            ent.Activate();
+            _score.Value += ent.Activate();
         }
 
         GameGrid[entity.Position] = result switch
         {
             CheckResult.Bomb => new Bomb(entity.Position, entity.EntityColor, GameGrid),
+            CheckResult.HorizontalLine => new HorizontalLine(entity.Position, entity.EntityColor, GameGrid),
+            CheckResult.VerticalLine => new VerticalLine(entity.Position, entity.EntityColor, GameGrid),
             _ => entity
         };
         return true;
@@ -186,6 +191,7 @@ public class GameEngine
 
     public void Start()
     {
+        _score.Value = 0;
         TimeValue = 0;
         _window.UpdateTime();
         _timer.Start();

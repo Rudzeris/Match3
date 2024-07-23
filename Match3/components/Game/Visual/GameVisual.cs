@@ -30,6 +30,7 @@ public class GameVisual : GameState
         defaultSize = new Size(40, 40);
         selectSize = new Size(20, 20);
         bombSize = new Size(35, 35);
+        lineSize = new Size(25, 25);
 
         defaultColor = Brushes.White;
 
@@ -87,7 +88,7 @@ public class GameVisual : GameState
         _progressBar = new ProgressBar();
         _status.Children.Add(_progressBar);
         _progressBar.Maximum = _progressBar.Value = _engine.MaxTimeValue;
-        _progressBar.Margin = new Thickness(2); 
+        _progressBar.Margin = new Thickness(2);
         Grid.SetColumn(_progressBar, 1);
 
         // ScoreLabel
@@ -137,7 +138,7 @@ public class GameVisual : GameState
 
     private void VisualGameGrid()
     {
-        _scoreLabel.Content = $"Score: {Score.Value}";
+        _scoreLabel.Content = $"_score: {Score.Value}";
         BaseEntity? entity;
         for (int i = 0; i < GameGrid.Y; i++)
         {
@@ -151,24 +152,40 @@ public class GameVisual : GameState
                     entity is Entity ? 0 :
                     5
                     );
-                if (buttons[i, j].Height == defaultSize.Height &&
-                    buttons[i, j].Width == defaultSize.Width)
-                {
+
+                if (entity != _engine.FirstEntity && entity != _engine.SecondEntity)
                     switch (entity)
                     {
                         case Bomb:
                             buttons[i, j].Height = bombSize.Height;
                             buttons[i, j].Width = bombSize.Width;
                             break;
+                        case VerticalLine:
+                            buttons[i, j].Height = defaultSize.Height;
+                            buttons[i, j].Width = lineSize.Width;
+                            break;
+                        case HorizontalLine:
+                            buttons[i, j].Height = lineSize.Height;
+                            buttons[i, j].Width = defaultSize.Width;
+                            break;
+                        default:
+                            buttons[i, j].Height = defaultSize.Height;
+                            buttons[i, j].Width = defaultSize.Width;
+                            break;
                     }
-                }
+
             }
         }
     }
-
+    
     public void UpdateTime()
     {
         _progressBar.Value = _progressBar.Maximum - _engine.TimeValue;
+    }
+
+    public void UpdateScore(object? sender, EventArgs e)
+    {
+        _scoreLabel.Content = _engine.Score.Value;
     }
     public void ButtonClick(object? sender, RoutedEventArgs e)
     {

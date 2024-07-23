@@ -13,7 +13,7 @@ class EndMenu : GameState
     public Score Score {
         set
         {
-            score.Content = $"Score: {value.Value}\nMaxScore: {value.MaxValue}";
+            score.Content = $"_score: {value.Value}\nMaxScore: {value.MaxValue}";
         }
     }
     public EndMenu(Panel panel, RoutedEventHandler routedEventHandler) : base(panel)

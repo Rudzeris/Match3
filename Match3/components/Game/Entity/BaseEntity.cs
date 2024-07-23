@@ -23,5 +23,7 @@ public abstract class BaseEntity
         return 1;
     }
 
+    public void Destroy() => this.IsDeleted = true;
+
     public abstract override string ToString();
 }
