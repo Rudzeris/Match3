@@ -8,6 +8,10 @@ public enum ClickType
 {
     FirstClick, SecondClick, Animation
 }
+public enum Operation
+{
+    None, Operation, Complete
+}
 public class GameEngine
 {
     private IChecker checker;
@@ -20,6 +24,7 @@ public class GameEngine
     public BaseEntity? SecondEntity { get; set; }
     private ClickType _clickType;
     private readonly RoutedEventHandler exit;
+    private bool _operation;
 
     private DispatcherTimer _timer;
 
@@ -28,6 +33,7 @@ public class GameEngine
 
     public GameEngine(GameVisual window, RoutedEventHandler exit)
     {
+        _operation = false;
         _score = new Score();
         _score.UpdateScore += window.UpdateScore;
         this.exit = exit;
@@ -53,7 +59,7 @@ public class GameEngine
     public async void Click(Vector2 position)
     {
         BaseEntity? entity = GameGrid[position];
-        if (entity == null || _clickType == ClickType.Animation)
+        if (entity == null || _operation)
             return;
         switch (_clickType)
         {
@@ -72,6 +78,7 @@ public class GameEngine
                 }
                 else
                 {
+                    _operation = true;
                     SecondEntity = entity;
                     _window.Select(entity.Position);
                     _clickType = ClickType.Animation;
@@ -119,6 +126,7 @@ public class GameEngine
                             await Task.Delay(delayMs * 3);
                             GameGrid.AddEntities();
                             await Task.Delay(delayMs);
+                            SearchAndDestroy(true);
                         }
                         WindowUpdate();
 
@@ -130,16 +138,21 @@ public class GameEngine
 
                     FirstEntity = SecondEntity = null;
                     _clickType = ClickType.FirstClick;
+                    _operation = false;
                 }
                 break;
         }
         _window.Update();
     }
 
-    private void SearchAndDestroy()
+    private async void SearchAndDestroy(bool show = false)
     {
+        _operation = true;
         BaseEntity? entity = null;
-        while (true)
+        int count = -1;
+        while (count != 0)
+        {
+            count = 0;
             for (int i = 0; i < GameGrid.Y; i++)
             {
                 for (int j = 0; j < GameGrid.X; j++)
@@ -147,14 +160,31 @@ public class GameEngine
                     entity = GameGrid[i, j];
                     if (entity != null && !entity.IsDeleted)
                     {
-                        DestroyEntities(entity);
+                        count += DestroyEntities(entity) ? 1 : 0;
                     }
                 }
             }
+            if (show)
+            {
+                WindowUpdate();
+                await Task.Delay(delayMs);
+            }
+            GameGrid.DownEntities();
+            if(show)
+                await Task.Delay(delayMs * 3);
+            if (show)
+                WindowUpdate();
+            GameGrid.AddEntities();
+            if(show)
+            await Task.Delay(delayMs);
+        }
+        WindowUpdate();
+        _operation = false;
     }
 
     private bool DestroyEntities(BaseEntity entity)
     {
+        _operation = true;
         if (entity == null || entity.IsDeleted) return false;
 
         List<BaseEntity> entities;
@@ -191,12 +221,13 @@ public class GameEngine
 
     public void Start()
     {
-        _score.Value = 0;
         TimeValue = 0;
         _window.UpdateTime();
         _timer.Start();
         GameGrid.RandomFillGrid();
         _clickType = ClickType.FirstClick;
+        SearchAndDestroy();
+        _score.Value = 0;
         WindowUpdate();
     }
 
